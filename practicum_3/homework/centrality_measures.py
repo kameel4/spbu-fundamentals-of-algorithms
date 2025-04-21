@@ -5,7 +5,9 @@ import numpy as np
 import networkx as nx
 
 from src.plotting.graphs import plot_graph, plot_network_via_plotly
-from src.common import AnyNxGraph 
+from src.common import AnyNxGraph
+
+from dijkstra import dijkstra
 
 
 class CentralityMeasure(Protocol):
@@ -14,12 +16,13 @@ class CentralityMeasure(Protocol):
 
 
 def closeness_centrality(G: AnyNxGraph) -> dict[Any, float]:
+    node_centrality = dict()
+    n = len(G)
+    for node in range(n):
+        dist_array = dijkstra(G, node)
+        node_centrality[node] = (1 / sum([dist_array[i] for i in range(n)]))
+    return node_centrality
 
-    ##########################
-    ### PUT YOUR CODE HERE ###
-    #########################
-
-    pass
 
 
 def betweenness_centrality(G: AnyNxGraph) -> dict[Any, float]: 
@@ -50,8 +53,8 @@ def plot_centrality_measure(G: AnyNxGraph, measure: CentralityMeasure) -> None:
 
 if __name__ == "__main__":
     G = nx.karate_club_graph()
-    
+
     plot_centrality_measure(G, closeness_centrality)
-    plot_centrality_measure(G, betweenness_centrality)
-    plot_centrality_measure(G, eigenvector_centrality)
+    # plot_centrality_measure(G, betweenness_centrality)
+    # plot_centrality_measure(G, eigenvector_centrality)
 

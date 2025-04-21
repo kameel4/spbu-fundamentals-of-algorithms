@@ -41,7 +41,7 @@ def plot_graph(G, node_weights=None, figsize=(6, 5), name=None):
     if node_weights is not None:
         sm = plt.cm.ScalarMappable(cmap=truncated_cmap, norm=norm)
         sm.set_array([])
-        plt.colorbar(sm)
+        plt.colorbar(sm, ax=ax)
 
     if name is not None:
         ax.set_title(name)
