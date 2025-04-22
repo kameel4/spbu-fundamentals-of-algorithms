@@ -6,8 +6,9 @@ import networkx as nx
 
 from src.plotting.graphs import plot_graph, plot_network_via_plotly
 from src.common import AnyNxGraph
+from src.linalg import get_numpy_eigenvalues, get_scipy_solution
 
-from dijkstra import dijkstra, dijkstra_all_paths, get_all_paths
+from dijkstra import dijkstra, dijkstra_all_paths, get_all_paths, find_dominant_eigenvector
 
 
 class CentralityMeasure(Protocol):
@@ -50,12 +51,14 @@ def betweenness_centrality(G: AnyNxGraph) -> dict[Any, float]:
     
 
 def eigenvector_centrality(G: AnyNxGraph) -> dict[Any, float]: 
+    node_eigenvector_centrality = dict()
 
-    ##########################
-    ### PUT YOUR CODE HERE ###
-    #########################
+    v = find_dominant_eigenvector(nx.adjacency_matrix(G).toarray())
 
-    pass
+    for node in range(len(G)):
+        node_eigenvector_centrality[node] = v[node]
+    return node_eigenvector_centrality
+
 
 
 def plot_centrality_measure(G: AnyNxGraph, measure: CentralityMeasure) -> None:
@@ -71,5 +74,5 @@ if __name__ == "__main__":
 
     plot_centrality_measure(G, closeness_centrality)
     plot_centrality_measure(G, betweenness_centrality)
-    # plot_centrality_measure(G, eigenvector_centrality)
+    plot_centrality_measure(G, eigenvector_centrality)
 
