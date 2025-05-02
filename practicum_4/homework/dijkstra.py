@@ -1,6 +1,9 @@
 from pathlib import Path
 from typing import Any
 from abc import ABC, abstractmethod
+from collections import defaultdict
+from heapq import heappop, heappush
+
 
 import numpy as np
 import networkx as nx
@@ -25,12 +28,44 @@ class DijkstraAlgorithm(GraphTraversal):
         pass
 
     def run(self, node: Any) -> None:
-
-        ##########################
-        ### PUT YOUR CODE HERE ###
-        #########################
-
-        pass
+        def dijkstra_all_paths(graph = G, start = node):
+            distances = {node: float('inf') for node in graph.nodes()}
+            distances[start] = 0
+            predecessors = defaultdict(list)
+            heap = [(0, start)]
+            
+            while heap:
+                current_dist, u = heappop(heap)
+                if current_dist > distances[u]:
+                    continue
+                for v in graph.neighbors(u):
+                    new_dist = current_dist + 1
+                    if new_dist < distances[v]:
+                        distances[v] = new_dist
+                        predecessors[v] = [u]
+                        heappush(heap, (new_dist, v))
+                    elif new_dist == distances[v]:
+                        predecessors[v].append(u)
+            return distances, predecessors
+    
+        def get_all_paths(predecessors, start, end):
+            paths = []
+            def dfs(node, path):
+                if node == start:
+                    paths.append(list(reversed(path)))
+                    return
+                for pred in predecessors[node]:
+                    dfs(pred, path + [pred])
+            dfs(end, [end])
+            return paths
+        
+        n = len(G)
+        for start_node in range(n):
+            distances, predcessors = dijkstra_all_paths(G)
+            all_paths_from_node = [get_all_paths(predcessors, start_node, end_node) for end_node in range(n)]
+            self.shortest_paths[start_node] = all_paths_from_node
+        
+        
 
 
 if __name__ == "__main__":
