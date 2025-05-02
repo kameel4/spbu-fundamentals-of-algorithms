@@ -27,19 +27,21 @@ class DijkstraAlgorithm(GraphTraversal):
     def postvisit(self, node: Any, **params) -> None:
         pass
 
-    def run(self, node: Any) -> None:
-        def dijkstra_all_paths(graph = G, start = node):
+    def run(self) -> None:
+        def dijkstra_all_paths(graph, start):
             distances = {node: float('inf') for node in graph.nodes()}
             distances[start] = 0
             predecessors = defaultdict(list)
             heap = [(0, start)]
+            # print("*"*20, '\n', graph.nodes())
             
             while heap:
                 current_dist, u = heappop(heap)
                 if current_dist > distances[u]:
                     continue
                 for v in graph.neighbors(u):
-                    new_dist = current_dist + 1
+                    weight = graph[u][v].get('weight', 1)
+                    new_dist = current_dist + weight
                     if new_dist < distances[v]:
                         distances[v] = new_dist
                         predecessors[v] = [u]
@@ -59,11 +61,15 @@ class DijkstraAlgorithm(GraphTraversal):
             dfs(end, [end])
             return paths
         
-        n = len(G)
+        all_paths = dict()
+        n = len(self.G)
         for start_node in range(n):
-            distances, predcessors = dijkstra_all_paths(G)
-            all_paths_from_node = [get_all_paths(predcessors, start_node, end_node) for end_node in range(n)]
-            self.shortest_paths[start_node] = all_paths_from_node
+            start_node = str(start_node)
+            distances, predcessors = dijkstra_all_paths(self.G, start_node)
+            all_paths_from_node = [get_all_paths(predcessors, start_node, str(end_node)) for end_node in range(n)]
+            all_paths[start_node] = all_paths_from_node
+        
+        self.shortest_paths = all_paths
         
         
 
@@ -76,12 +82,12 @@ if __name__ == "__main__":
     plot_graph(G)
 
     sp = DijkstraAlgorithm(G)
-    sp.run("0")
+    sp.run()
 
-    test_node = "5"
-    shortest_path_edges = [
-        (sp.shortest_paths[test_node][i], sp.shortest_paths[test_node][i + 1])
-        for i in range(len(sp.shortest_paths[test_node]) - 1)
-    ]
-    plot_graph(G, highlighted_edges=shortest_path_edges)
+    start_node = '0'
+    test_node = 5
+    # print(sp.shortest_paths['0'][5][0])
+    shortest_path_edges = [(sp.shortest_paths[start_node][test_node][0][i], sp.shortest_paths[start_node][test_node][0][i+1]) for i in range(len( sp.shortest_paths[start_node][test_node][0])-1)]
+    # print(shortest_path_edges)
+    plot_graph(G, highlighted_edges=shortest_path_edges) 
 
